@@ -1,0 +1,18 @@
+# Managed by skillsbase CLI.
+# Edit source entries to add or remove managed skills.
+version: 1
+skillsRoot: skills
+metadataFile: .skill-source.json
+managedBy: skillsbase
+remoteRepository: HagiCode-org/skillsbase-template
+staleCleanup: true
+skillsCliVersion: 1.4.8
+installAgent: codex
+sources:
+  - key: cli-github
+    label: "HagiCode CLI skills"
+    kind: github-repository
+    root: HagiCode-org/cli
+    targetPrefix: ""
+    include:
+      - hagi
