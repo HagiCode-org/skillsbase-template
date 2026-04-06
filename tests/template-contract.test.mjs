@@ -9,7 +9,6 @@ import { promisify } from "node:util";
 
 const execFile = promisify(execFileCallback);
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const monorepoRoot = path.resolve(repoRoot, "..", "..");
 
 function parseScalar(rawValue) {
   const value = rawValue.trim();
@@ -68,13 +67,18 @@ async function collectRelativeFiles(rootPath, basePath = rootPath) {
 }
 
 async function createFakeGlobalSkillsbase(binRoot) {
+  const localSkillsbasePath = path.resolve(repoRoot, "..", "skillsbase", "bin", "skillsbase.mjs");
+  if (!(await pathExists(localSkillsbasePath))) {
+    return null;
+  }
+
   const binDir = path.join(binRoot, "bin");
   const scriptPath = path.join(binDir, "skillsbase");
   await fs.mkdir(binDir, { recursive: true });
   await fs.writeFile(
     scriptPath,
     `#!/usr/bin/env bash
-exec node "${path.join(monorepoRoot, "repos", "skillsbase", "bin", "skillsbase.mjs")}" "$@"
+exec node "${localSkillsbasePath}" "$@"
 `,
     "utf8",
   );
@@ -229,7 +233,7 @@ test("repo-local drift check stays stable outside the template working directory
       cwd: os.tmpdir(),
       env: {
         ...process.env,
-        PATH: `${fakeBin}:${process.env.PATH}`,
+        PATH: fakeBin ? `${fakeBin}:${process.env.PATH}` : process.env.PATH,
       },
       maxBuffer: 16 * 1024 * 1024,
       timeout: 60_000,
