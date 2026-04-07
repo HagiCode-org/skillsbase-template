@@ -30,11 +30,23 @@ npm test
 
 These commands call the global `skillsbase` CLI directly. Synchronization pulls the default `hagi` skill from GitHub.
 
+## GitHub Maintenance Path
+
+The managed GitHub automation now exposes `.github/workflows/skills-manage.yml` for explicit non-interactive maintenance:
+
+- Choose `operation=add`, `remove`, or `sync`
+- Provide `skill-name` for `add` and `remove`
+- Optionally pass `source` and `allow-missing-sources`
+- Keep `run-tests=true` when the workflow should validate the repository after the command
+
+This path is an automation option, not the primary maintainer flow. It updates the working tree inside the runner only and does not commit, push, or open pull requests.
+
 ## Maintenance Rules
 
 - Do not edit `skills/hagi/**` by hand
 - To change the default skill, update the remote source declaration in `sources.yaml` or wait for upstream changes in `HagiCode-org/cli`
 - Run `npm run sync` after changing the source contract
 - In CI or other non-interactive environments, use `npm test` and `npm run sync:check`
+- Use the GitHub maintenance workflow only when a maintainer needs a UI-triggered non-interactive `add`, `remove`, or `sync`
 
 For the full maintainer flow, see `docs/maintainer-workflow.md`.

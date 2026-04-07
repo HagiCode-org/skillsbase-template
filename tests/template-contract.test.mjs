@@ -162,7 +162,9 @@ test("template exposes the managed baseline and official entrypoints", async () 
     "skills/hagi/references/proposal-flow.md",
     "skills/hagi/references/validation.md",
     ".github/workflows/skills-sync.yml",
+    ".github/workflows/skills-manage.yml",
     ".github/actions/skillsbase-sync/action.yml",
+    ".github/actions/skillsbase-manage/action.yml",
   ];
 
   for (const relativePath of requiredPaths) {
@@ -174,21 +176,35 @@ test("template exposes the managed baseline and official entrypoints", async () 
   assert.equal(packageJson.scripts["sync:check"], "skillsbase sync --check --repo .");
   assert.equal(packageJson.scripts.test, "node --test ./tests/*.test.mjs");
 
-  const [readme, workflow, action] = await Promise.all([
+  const [readme, workflowDoc, workflow, manageWorkflow, action, manageAction] = await Promise.all([
     fs.readFile(path.join(repoRoot, "README.md"), "utf8"),
+    fs.readFile(path.join(repoRoot, "docs/maintainer-workflow.md"), "utf8"),
     fs.readFile(path.join(repoRoot, ".github/workflows/skills-sync.yml"), "utf8"),
+    fs.readFile(path.join(repoRoot, ".github/workflows/skills-manage.yml"), "utf8"),
     fs.readFile(path.join(repoRoot, ".github/actions/skillsbase-sync/action.yml"), "utf8"),
+    fs.readFile(path.join(repoRoot, ".github/actions/skillsbase-manage", "action.yml"), "utf8"),
   ]);
 
   assert.match(readme, /npm install --global @hagicode\/skillsbase/);
   assert.match(readme, /npm run sync/);
   assert.match(readme, /npm run sync:check/);
   assert.match(readme, /npm test/);
+  assert.match(readme, /skills-manage\.yml/);
+  assert.match(readme, /does not commit, push, or open pull requests/i);
   assert.doesNotMatch(readme, /bin\/skillsbase\.mjs/);
-  assert.match(workflow, /npm install --global @hagicode\/skillsbase/);
-  assert.match(workflow, /skillsbase sync --check --repo \./);
+  assert.match(workflowDoc, /GitHub Maintenance Path/);
+  assert.match(workflowDoc, /Local CLI commands remain the primary maintainer path/);
+  assert.match(workflowDoc, /does not commit, push, or open pull requests/i);
+  assert.match(workflow, /uses: \.\/\.github\/actions\/skillsbase-sync/);
+  assert.match(workflow, /run-tests: "true"/);
+  assert.match(manageWorkflow, /workflow_dispatch:/);
+  assert.match(manageWorkflow, /operation:/);
+  assert.match(manageWorkflow, /uses: \.\/\.github\/actions\/skillsbase-manage/);
   assert.match(action, /npm install --global @hagicode\/skillsbase/);
   assert.match(action, /skillsbase sync --check --repo \./);
+  assert.match(manageAction, /allow-missing-sources:/);
+  assert.match(manageAction, /case "\$\{OPERATION\}" in/);
+  assert.match(manageAction, /command=\(skillsbase "\$\{OPERATION\}"/);
 });
 
 test("default hagi skill matches the remote source declaration", async () => {

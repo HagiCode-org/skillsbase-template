@@ -36,6 +36,19 @@ npm test
 npm run sync:check
 ```
 
+## GitHub Maintenance Path
+
+Local CLI commands remain the primary maintainer path.
+
+Use `.github/workflows/skills-manage.yml` only when a maintainer needs an explicit GitHub UI entrypoint for non-interactive maintenance.
+
+- `operation` chooses `add`, `remove`, or `sync`
+- `skill-name` is required for `add` and `remove`
+- `source` is optional and maps to `--source`
+- `allow-missing-sources` maps to `--allow-missing-sources`
+- `run-tests` controls the post-operation `npm test`
+- The workflow does not commit, push, or open pull requests
+
 ## Notes
 
 - `sources.yaml` is the single source of truth
