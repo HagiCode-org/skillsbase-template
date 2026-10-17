@@ -1,5 +1,7 @@
 # skillsbase-template
 
+[![last commit](https://img.shields.io/github/last-commit/HagiCode-org/skillsbase-template)](https://github.com/HagiCode-org/skillsbase-template/commits/main)
+
 `skillsbase-template` is the canonical template for a `skillsbase`-managed skills repository.
 
 Key points:
